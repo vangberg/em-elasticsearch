@@ -1,0 +1,32 @@
+GIT
+  remote: http://github.com/ichverstehe/couchchanges.git
+  revision: 6caa916b8b4f7e1b6a1db89f33d22b5fe7a4bd04
+  specs:
+    couchchanges (0.1)
+      em-http-request (>= 0.2.7)
+      json
+
+GIT
+  remote: http://github.com/joshbuddy/em-spec.git
+  revision: 25509a6efa0ca71cdd1146ad084e110d2af01f5a
+  specs:
+    em-spec (0.2.2)
+
+GEM
+  remote: http://rubygems.org/
+  specs:
+    addressable (2.2.1)
+    em-http-request (0.2.13)
+      addressable (>= 2.0.0)
+      eventmachine (>= 0.12.9)
+    eventmachine (0.12.10)
+    json (1.4.6)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  couchchanges!
+  em-http-request (= 0.2.13)
+  em-spec!
+  json (= 1.4.6)
