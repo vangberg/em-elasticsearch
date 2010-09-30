@@ -43,6 +43,12 @@ EM.describe ElasticSearch do
     end
   end
 
+  it "calls errback on non-existing docs" do
+    req = elastic.get(:index => "notes", :type => "person", :id => "non-existing")
+    req.callback { should.flunk "should not be successful." }
+    req.errback { done }
+  end
+
   it "searches documents" do
     elastic.index(Joan).callback do
       elastic.index(Harry).callback do

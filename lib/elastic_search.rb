@@ -8,50 +8,33 @@ class ElasticSearch
     end
 
     def index options
-      path = options.values_at(:index, :type, :id).join("/")
-      http = EM::HttpRequest.new(@url + "/" + path).put(
-        :body => options[:document].to_json
-      )
-      req = EM::DefaultDeferrable.new
-
-      http.callback {
-        response = JSON.parse(http.response)
-        req.succeed response
-      }
-      http.errback { raise "err from index: #{http.response}" }
-      req
+      request :put, options, :body => options[:document].to_json
     end
 
     def get options
-      path = options.values_at(:index, :type, :id).join("/")
-      http = EM::HttpRequest.new(@url + "/" + path).get
-      req = EM::DefaultDeferrable.new
-
-      http.callback {
-        response = JSON.parse(http.response)
-        req.succeed response
-      }
-      http.errback { raise "err from get: #{http.response}" }
-      req
+      request :get, options
     end
 
     def search options
-      path = options.values_at(:index, :type).join("/")
-      http = EM::HttpRequest.new(@url + "/" + path + "/_search").post(
-        :body => {"query" => options[:query]}.to_json
-      )
-      req = EM::DefaultDeferrable.new
+      options[:action] = "_search"
+      request :post, options, :body => {"query" => options[:query]}.to_json
+    end
+
+    def request method, doc, options={}
+      path = doc.values_at(:index, :type, :id, :action).compact.join("/")
+      http = EM::HttpRequest.new(@url + "/" + path).send(method, options)
+      req  = EM::DefaultDeferrable.new
 
       http.callback {
-        response = JSON.parse(http.response)
-        req.succeed response
+        if http.response_header.status >= 400
+          req.fail http
+        else
+          response = JSON.parse(http.response)
+          req.succeed response
+        end
       }
-      http.errback { raise "err from search: #{http.response}" }
+      http.errback { req.fail http }
       req
     end
-  end
-
-  class Request
-    include EventMachine::Deferrable
   end
 end
