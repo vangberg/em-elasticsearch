@@ -47,7 +47,8 @@ EM.describe Indexer do
 
   it "indexes docs" do
     EM.add_timer(0.5) {
-      elastic.get(:index => "notes", :type => "person", :id => "joan") do |response|
+      req = elastic.get(:index => "notes", :type => "person", :id => "joan")
+      req.callback do |response|
         response["_id"].should == "joan"
         response["_source"].should == {
           "name"    => "Joan January",
@@ -55,6 +56,14 @@ EM.describe Indexer do
         }
         done
       end
+    }
+  end
+
+  it "removes docs" do
+    EM.add_timer(0.5) {
+      req = elastic.get(:index => "notes", :type => "person", :id => "klaus")
+      req.callback { should.flunk "doc should be deleted" }
+      req.errback { done }
     }
   end
 end

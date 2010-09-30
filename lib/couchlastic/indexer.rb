@@ -14,7 +14,7 @@ module Couchlastic
 
     def elastic url=nil
       if url
-        @elastic = Couchlastic::ElasticSearch::Client.new(url)
+        @elastic = ElasticSearch::Client.new(url)
       else
         @elastic
       end
