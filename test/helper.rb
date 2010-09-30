@@ -7,6 +7,8 @@ require "couchlastic"
 require "elastic_search"
 require "couchrest"
 
+Couchlastic.options[:log_level] = Logger::WARN
+
 EM.spec_backend = EM::Spec::Bacon
 Bacon.summary_on_exit
 

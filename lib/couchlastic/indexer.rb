@@ -27,6 +27,7 @@ module Couchlastic
     def start
       changes = CouchChanges.new
       changes.update {|c|
+        Couchlastic.logger.info "Indexing sequence #{c["seq"]}"
         @indices.each {|name, block|
           res = block.call c["doc"]
           if res
