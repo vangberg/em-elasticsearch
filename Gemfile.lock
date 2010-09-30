@@ -16,6 +16,7 @@ GEM
   remote: http://rubygems.org/
   specs:
     addressable (2.2.1)
+    bacon (1.1.0)
     em-http-request (0.2.13)
       addressable (>= 2.0.0)
       eventmachine (>= 0.12.9)
@@ -26,6 +27,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  bacon (= 1.1.0)
   couchchanges!
   em-http-request (= 0.2.13)
   em-spec!

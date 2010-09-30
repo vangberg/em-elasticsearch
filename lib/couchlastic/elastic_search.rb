@@ -18,7 +18,7 @@ module Couchlastic
           response = JSON.parse(http.response)
           yield response
         }
-        http.errback { raise "err from index" }
+        http.errback { raise "err from index: #{http.response}" }
       end
 
       def search options
@@ -31,7 +31,7 @@ module Couchlastic
           response = JSON.parse(http.response)
           yield response
         }
-        http.errback { raise "err from search" }
+        http.errback { raise "err from search: #{http.response}" }
       end
     end
   end
