@@ -7,4 +7,5 @@ gem "json", "1.4.6"
 group :development do
   gem "bacon", "1.1.0"
   gem "em-spec", :git => "http://github.com/joshbuddy/em-spec.git"
+  gem "couchrest"
 end
