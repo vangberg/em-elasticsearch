@@ -152,7 +152,7 @@ class TestType < ElasticTestCase
 
   test "#index" do
     cluster.delete_all_indices {
-      @person.index("harry", Harry, :refresh => true) {|response|
+      @person.index("harry", Harry) {|response|
         assert response["ok"]
         assert_equal "notes", response["_index"]
         assert_equal "person", response["_type"]
