@@ -17,5 +17,11 @@ Gem::Specification.new do |s|
   s.test_files  = [
     "test/couchlastic_test.rb",
   ]
+  s.add_dependency "em-http-request", "~> 0.2.13"
+  s.add_dependency "json", "~> 1.4.6"
+  
+  s.add_development_dependency "em-spec"
+  s.add_development_dependency "contest"
+  s.add_development_dependency "couchrest"
 end
 
