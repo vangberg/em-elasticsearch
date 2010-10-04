@@ -1,7 +1,8 @@
 $:.unshift "lib"
 require "bundler/setup"
-require "bacon"
-require "em-spec/bacon"
+require "test/unit"
+require "em-spec/test"
+require "contest"
 require "fiber"
 require "couchlastic"
 require "elastic_search"
@@ -9,12 +10,15 @@ require "couchrest"
 
 Couchlastic.options[:log_level] = Logger::WARN
 
-EM.spec_backend = EM::Spec::Bacon
-Bacon.summary_on_exit
+class ElasticTestCase < Test::Unit::TestCase
+  include EM::Test
 
-module Helpers
   def elastic
-    @elastic ||= ElasticSearch::Client.new("http://127.0.0.1:9200")
+    ElasticSearch::Client.new("http://127.0.0.1:9200")
+  end
+
+  def cluster
+    elastic.cluster
   end
 
   def couch

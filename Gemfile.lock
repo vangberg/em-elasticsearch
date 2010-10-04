@@ -1,4 +1,10 @@
 GIT
+  remote: http://github.com/eventmachine/eventmachine.git
+  revision: 5f1b8d770721c10a7481d82eca18b563de87da3c
+  specs:
+    eventmachine (0.12.11)
+
+GIT
   remote: http://github.com/ichverstehe/couchchanges.git
   revision: b41b57f305cfa77b95c9eec99ec6b7f36a8a5af2
   specs:
@@ -16,7 +22,7 @@ GEM
   remote: http://rubygems.org/
   specs:
     addressable (2.2.1)
-    bacon (1.1.0)
+    contest (0.1.2)
     couchrest (1.0.1)
       json (>= 1.4.6)
       mime-types (>= 1.15)
@@ -24,7 +30,6 @@ GEM
     em-http-request (0.2.13)
       addressable (>= 2.0.0)
       eventmachine (>= 0.12.9)
-    eventmachine (0.12.10)
     json (1.4.6)
     mime-types (1.16)
     rest-client (1.6.1)
@@ -34,9 +39,10 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  bacon (= 1.1.0)
+  contest
   couchchanges!
   couchrest
   em-http-request (= 0.2.13)
   em-spec!
+  eventmachine!
   json (= 1.4.6)
