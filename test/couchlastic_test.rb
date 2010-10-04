@@ -22,48 +22,51 @@ Klaus = {
 }
 
 Indexer = Couchlastic::Indexer.new do |c|
-  c.couch "http://localhost:5984/couchlastic"
-  c.elastic "http://localhost:9200"
+  c.couch "http://127.0.0.1:5984/couchlastic"
+  c.elastic "http://127.0.0.1:9200"
 
-  c.index "persons" do |doc|
-    {
-      :type     => "person",
-      :document => doc
-    }
+  c.index "notes" do |source, target|
+    target.id = source["_id"]
+    target.type = "person"
+    target.source = source
+    target
   end
 end
 
 class TestIndexer < ElasticTestCase
   setup do
     couch.recreate!
-    couch.save_doc harry
-    couch.save_doc joan
-    couch.save_doc klaus
-    couch.delete_doc klaus
-    Indexer.start
+    couch.save_doc Harry
+    couch.save_doc Joan
+    couch.save_doc Klaus
+    couch.delete_doc Klaus
   end
 
-  test "index docs" do
+  def prepare &block
     elastic.cluster.delete_all_indices {
-      EM.add_timer(0.5) {
-        elastic.index("notes").get {|response|
-        req.callback do |response|
-          response["_id"].should == "joan"
-          response["_source"].should == {
-            "name"    => "Joan January",
-            "country" => "USA"
-          }
-          done
-        end
-      }
+      Indexer.start
+      EM.add_timer(2.5, block)
     }
   end
 
-  it "removes docs" do
-    EM.add_timer(0.5) {
-      req = elastic.get(:index => "notes", :type => "person", :id => "klaus")
-      req.callback { should.flunk "doc should be deleted" }
-      req.errback { done }
+  test "index docs" do
+    prepare {
+      request = elastic.index("notes").type("person").get("joan")
+      request.callback {|response|
+        assert_equal "joan", response["_id"]
+        assert_equal "Joan January", response["_source"]["name"]
+        assert_equal "USA", response["_source"]["country"]
+        done
+      }
+      request.errback { flunk "didn't index doc" }
+    }
+  end
+
+  test "remove docs" do
+    prepare {
+      request = elastic.index("notes").type("person").get("klaus")
+      request.callback { flunk "doc should be deleted" }
+      request.errback { done }
     }
   end
 end
