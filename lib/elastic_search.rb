@@ -61,7 +61,7 @@ class ElasticSearch
     end
 
     def base_url
-      client.base_url + "/_cluster"
+      @client.base_url + "/_cluster"
     end
 
     def state &block
@@ -72,7 +72,7 @@ class ElasticSearch
       state {|response|
         result = {}
         response["metadata"]["indices"].keys.map {|name|
-          result[name] = Index.new(client, name)
+          result[name] = Index.new(@client, name)
         }
         yield result
       }
@@ -81,7 +81,7 @@ class ElasticSearch
     def delete_all_indices &block
       indices {|response|
         EM::Iterator.new(response.keys).map(lambda {|name, iter|
-          client.request(:delete, "/" + name) {iter.return name}
+          @client.request(:delete, "/" + name) {iter.return name}
         }, block)
       }
     end
@@ -98,20 +98,42 @@ class ElasticSearch
     end
 
     def base_url
-      client.base_url + "/" + @name
+      @client.base_url + "/" + @name
+    end
+
+    def type name
+      Type.new self, name
     end
 
     def create &block
       request :put, "/", &block
     end
 
-    def index type, id, doc, &block
-      path = "/#{type}/#{id}"
-      request :put, path, :body => doc.to_json, &block
-    end
-
     def delete &block
       request :delete, &block
+    end
+  end
+
+  class Type
+    include HTTP
+
+    attr_reader :index, :name
+
+    def initialize index, name
+      @index = index
+      @name  = name
+    end
+
+    def base_url
+      @index.base_url + "/" + @name
+    end
+
+    def index id, doc, &block
+      request :put, "/#{id}", :body => doc.to_json, &block
+    end
+
+    def get id, &block
+      request :get, "/#{id}", &block
     end
   end
 end

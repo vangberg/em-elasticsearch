@@ -1,22 +1,20 @@
 require "./test/helper.rb"
 
-include Helpers
-
-harry = {
+Harry = {
   "_id"     => "harry",
   "type"    => "person",
   "name"    => "Harry Dynamite",
   "country" => "Denmark"
 }
 
-joan = {
+Joan = {
   "_id"     => "joan",
   "type"    => "person",
   "name"    => "Joan January",
   "country" => "USA"
 }
 
-klaus = {
+Klaus = {
   "_id"     => "klaus",
   "type"    => "person",
   "name"    => "Klaus Denn",
@@ -35,8 +33,8 @@ Indexer = Couchlastic::Indexer.new do |c|
   end
 end
 
-EM.describe Indexer do
-  before do
+class TestIndexer < ElasticTestCase
+  setup do
     couch.recreate!
     couch.save_doc harry
     couch.save_doc joan
@@ -45,17 +43,19 @@ EM.describe Indexer do
     Indexer.start
   end
 
-  it "indexes docs" do
-    EM.add_timer(0.5) {
-      req = elastic.get(:index => "notes", :type => "person", :id => "joan")
-      req.callback do |response|
-        response["_id"].should == "joan"
-        response["_source"].should == {
-          "name"    => "Joan January",
-          "country" => "USA"
-        }
-        done
-      end
+  test "index docs" do
+    elastic.cluster.delete_all_indices {
+      EM.add_timer(0.5) {
+        elastic.index("notes").get {|response|
+        req.callback do |response|
+          response["_id"].should == "joan"
+          response["_source"].should == {
+            "name"    => "Joan January",
+            "country" => "USA"
+          }
+          done
+        end
+      }
     }
   end
 

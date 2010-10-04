@@ -104,18 +104,6 @@ class TestIndex < ElasticTestCase
     }
   end
 
-  test "#index" do
-    cluster.delete_all_indices {
-      @notes.index("person", "harry", Harry) {|response|
-        assert response["ok"]
-        assert_equal "notes", response["_index"]
-        assert_equal "person", response["_type"]
-        assert_equal "harry", response["_id"]
-        done
-      }
-    }
-  end
-
   test "#delete" do
     cluster.delete_all_indices {
       @notes.create {
@@ -130,17 +118,57 @@ class TestIndex < ElasticTestCase
   end
 end
 
-#class EM::HttpClient
-  #alias :old_receive :receive_data
-  #alias :old_send :send_data
+class TestType < ElasticTestCase
+  setup do
+    @notes = elastic.index("notes")
+    @person = @notes.type("person")
+  end
 
-  #def receive_data d
-    #puts "<#{d}"
-    #old_receive d
-  #end
+  test "#base_url" do
+    assert_equal "http://127.0.0.1:9200/notes/person", @person.base_url
+    done
+  end
 
-  #def send_data d
-    #puts ">#{d}"
-    #old_send d
-  #end
-#end
+  test "#index" do
+    cluster.delete_all_indices {
+      @person.index("harry", Harry) {|response|
+        assert response["ok"]
+        assert_equal "notes", response["_index"]
+        assert_equal "person", response["_type"]
+        assert_equal "harry", response["_id"]
+        done
+      }
+    }
+  end
+
+  test "#get" do
+    cluster.delete_all_indices {
+      @person.index("harry", Harry) {
+        EM.add_timer(1) {
+          @person.get("harry") {|response|
+            assert_equal "notes", response["_index"]
+            assert_equal "person", response["_type"]
+            assert_equal "harry", response["_id"]
+            assert_equal "Denmark", response["_source"]["country"]
+            done
+          }
+        }
+      }
+    }
+  end
+end
+
+class EM::HttpClient
+  alias :old_receive :receive_data
+  alias :old_send :send_data
+
+  def receive_data d
+    puts "<#{d}"
+    old_receive d
+  end
+
+  def send_data d
+    puts ">#{d}"
+    old_send d
+  end
+end
