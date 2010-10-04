@@ -6,7 +6,8 @@ class ElasticSearch
   module HTTP
     def request method, path="/", options={}, &block
       options[:head] ||= {}
-      options[:head].merge! "content-type" => "application/json"
+      options[:head].merge! "content-type" => "application/json; charset=UTF-8"
+      options[:timeout] ||= 1
       http = EM::HttpRequest.new(base_url + path).send(method, options)
       req  = EM::DefaultDeferrable.new
       req.callback &block if block
@@ -105,8 +106,12 @@ class ElasticSearch
       Type.new self, name
     end
 
-    def create &block
-      request :put, "/", &block
+    def create options={}, &block
+      request :put, "/", :body => options.to_json, &block
+    end
+
+    def status &block
+      request :get, "/_status", &block
     end
 
     def delete &block
@@ -117,19 +122,19 @@ class ElasticSearch
   class Type
     include HTTP
 
-    attr_reader :index, :name
+    attr_reader :elastic_index, :name
 
-    def initialize index, name
-      @index = index
-      @name  = name
+    def initialize elastic_index, name
+      @elastic_index = elastic_index
+      @name = name
     end
 
     def base_url
-      @index.base_url + "/" + @name
+      @elastic_index.base_url + "/" + @name
     end
 
-    def index id, doc, &block
-      request :put, "/#{id}", :body => doc.to_json, &block
+    def index id, doc, options={}, &block
+      request :put, "/#{id}", :body => doc.to_json, :query => options, &block
     end
 
     def get id, &block

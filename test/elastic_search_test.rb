@@ -104,6 +104,27 @@ class TestIndex < ElasticTestCase
     }
   end
 
+  test "#create with settings" do
+    cluster.delete_all_indices {
+      @notes.create(:index => {:number_of_shards => 2}) {|response|
+        assert response["ok"]
+        done
+      }
+    }
+  end
+
+  test "#status" do
+    cluster.delete_all_indices {
+      @notes.create {
+        @notes.status {|response|
+          assert response["ok"]
+          assert_not_nil response["_shards"]
+          done
+        }
+      }
+    }
+  end
+
   test "#delete" do
     cluster.delete_all_indices {
       @notes.create {
@@ -131,7 +152,7 @@ class TestType < ElasticTestCase
 
   test "#index" do
     cluster.delete_all_indices {
-      @person.index("harry", Harry) {|response|
+      @person.index("harry", Harry, :refresh => true) {|response|
         assert response["ok"]
         assert_equal "notes", response["_index"]
         assert_equal "person", response["_type"]
@@ -143,32 +164,30 @@ class TestType < ElasticTestCase
 
   test "#get" do
     cluster.delete_all_indices {
-      @person.index("harry", Harry) {
-        EM.add_timer(1) {
-          @person.get("harry") {|response|
-            assert_equal "notes", response["_index"]
-            assert_equal "person", response["_type"]
-            assert_equal "harry", response["_id"]
-            assert_equal "Denmark", response["_source"]["country"]
-            done
-          }
+      @person.index("harry", Harry, :refresh => true) {
+        @person.get("harry") {|response|
+          assert_equal "notes", response["_index"]
+          assert_equal "person", response["_type"]
+          assert_equal "harry", response["_id"]
+          assert_equal "Denmark", response["_source"]["country"]
+          done
         }
       }
     }
   end
 end
 
-class EM::HttpClient
-  alias :old_receive :receive_data
-  alias :old_send :send_data
+#class EM::HttpClient
+  #alias :old_receive :receive_data
+  #alias :old_send :send_data
 
-  def receive_data d
-    puts "<#{d}"
-    old_receive d
-  end
+  #def receive_data d
+    #puts "<<<<<\n#{d}"
+    #old_receive d
+  #end
 
-  def send_data d
-    puts ">#{d}"
-    old_send d
-  end
-end
+  #def send_data d
+    #puts ">>>>>\n#{d}"
+    #old_send d
+  #end
+#end
