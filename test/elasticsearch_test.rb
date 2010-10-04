@@ -1,16 +1,7 @@
 require "./test/helper.rb"
 
-Harry = {
-  "name"    => "Harry Dynamite",
-  "country" => "Denmark"
-}
-Joan = {
-  "name"    => "Joan January",
-  "country" => "USA"
-}
-
 class TestHTTP < ElasticTestCase
-  include ElasticSearch::HTTP
+  include EventMachine::ElasticSearch::HTTP
 
   def base_url
     "http://localhost:9200"
@@ -66,8 +57,8 @@ class TestCluster < ElasticTestCase
         elastic.index("bar").create {
           cluster.indices {|indices|
             assert_equal 2, indices.size
-            assert indices["foo"].is_a? ElasticSearch::Index
-            assert indices["bar"].is_a? ElasticSearch::Index
+            assert indices["foo"].is_a? EventMachine::ElasticSearch::Index
+            assert indices["bar"].is_a? EventMachine::ElasticSearch::Index
             done
           }
         }

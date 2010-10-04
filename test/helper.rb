@@ -3,10 +3,10 @@ require "bundler/setup"
 require "test/unit"
 require "em-spec/test"
 require "contest"
-require "fiber"
 require "couchlastic"
-require "elastic_search"
+require "em-elasticsearch"
 require "couchrest"
+require "./test/fixtures.rb"
 
 Couchlastic.options[:log_level] = Logger::WARN
 
@@ -14,7 +14,7 @@ class ElasticTestCase < Test::Unit::TestCase
   include EM::Test
 
   def elastic
-    ElasticSearch::Client.new("http://127.0.0.1:9200")
+    EM::ElasticSearch::Client.new("http://127.0.0.1:9200")
   end
 
   def cluster

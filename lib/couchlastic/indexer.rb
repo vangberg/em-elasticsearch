@@ -1,5 +1,5 @@
 require "couchchanges"
-require "elastic_search"
+require "em-elasticsearch"
 
 module Couchlastic
   class Indexer
@@ -14,7 +14,7 @@ module Couchlastic
 
     def elastic url=nil
       if url
-        @elastic = ElasticSearch::Client.new(url)
+        @elastic = EventMachine::ElasticSearch::Client.new(url)
       else
         @elastic
       end

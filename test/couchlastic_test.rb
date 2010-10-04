@@ -1,26 +1,5 @@
 require "./test/helper.rb"
 
-Harry = {
-  "_id"     => "harry",
-  "type"    => "person",
-  "name"    => "Harry Dynamite",
-  "country" => "Denmark"
-}
-
-Joan = {
-  "_id"     => "joan",
-  "type"    => "person",
-  "name"    => "Joan January",
-  "country" => "USA"
-}
-
-Klaus = {
-  "_id"     => "klaus",
-  "type"    => "person",
-  "name"    => "Klaus Denn",
-  "country" => "Germany"
-}
-
 Indexer = Couchlastic::Indexer.new do |c|
   c.couch "http://127.0.0.1:5984/couchlastic"
   c.elastic "http://127.0.0.1:9200"
