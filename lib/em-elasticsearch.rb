@@ -11,13 +11,14 @@ module EventMachine
         options[:timeout] ||= 1
         http = EM::HttpRequest.new(base_url + path).send(method, options)
         req  = EM::DefaultDeferrable.new
-        req.callback &block if block
 
         http.callback {
           if http.response_header.status >= 400
+            yield http.response, true if block_given?
             req.fail http
           else
             response = JSON.parse(http.response)
+            yield response, nil if block_given?
             req.succeed response
           end
         }

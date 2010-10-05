@@ -7,7 +7,7 @@ class TestHTTP < ElasticTestCase
     "http://localhost:9200"
   end
 
-  test "explicit callback" do
+  test "successful explicit callback" do
     req = request(:get, "/")
     req.callback {|response|
       assert response["ok"]
@@ -15,9 +15,33 @@ class TestHTTP < ElasticTestCase
     }
   end
 
-  test "implicit callback" do
+  test "successful implicit callback" do
     req = request(:get, "/") {|response|
       assert response["ok"]
+      done
+    }
+  end
+
+  test "successful implicit callback with error arg" do
+    req = request(:get, "/") {|response, err|
+      assert response["ok"]
+      assert_nil err
+      done
+    }
+  end
+
+  test "failing explicit callback" do
+    req = request(:get, "/_non-existing")
+    req.callback { flunk "should fail on /_non-existing"; done }
+    req.errback {|err|
+      assert_not_nil err
+      done
+    }
+  end
+
+  test "failing implicit callback with error arg" do
+    req = request(:get, "/_non-existing") {|response, err|
+      assert_not_nil err
       done
     }
   end
