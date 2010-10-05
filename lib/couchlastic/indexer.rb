@@ -58,9 +58,9 @@ module Couchlastic
 
     def index_change change, doc
       @indices.each {|name, block|
-        if doc = block.call(change, doc)
-          type = elastic.index(name).type(doc[:type])
-          type.index(doc[:id], doc[:doc])
+        if result = block.call(change, doc)
+          type = elastic.index(name).type(result[:type])
+          type.index(result[:id], result[:doc])
         end
       }
     end
