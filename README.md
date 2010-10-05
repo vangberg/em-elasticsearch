@@ -1,25 +1,39 @@
 # Couchlastic
 
-Make your CouchDB documents searchable with ElasticSearch.
+Make your CouchDB documents searchable with ElasticSearch. This is a work in
+progress. Come back in a couple of weeks. Or months.
+
 
 ## example.rb
 
-    require "couchlastic"
-
     EM.run {
-      indexer = Couchlastic::Indexer.new
+      indexer = Couchlastic::Indexer.new do |i|
+        i.couch   = "http://localhost:5984/mydb"
+        i.elastic = "http://localhost:9200"
 
-      indexer.couch "http://localhost:5984/mydb"
-      indexer.elastic "http://localhost:9200
-
-      indexer.index "people" do |source, target|
-        if source["type"] == "person"
-          target.id = source["_id"]
-          target.type = "person"
-          target.source = {
-            :name => doc["name"],
-            :country => doc["country"]
+        i.map("notes/person", :properties => {
+          "name" => {
+            "type" => "string",
+            "include_in_all" => false
+          },
+          "age" => {
+            "type" => "integer",
+            "include_in_all" => false
           }
+        })
+
+        i.index "people" do |change, doc|
+          if doc["type"] == "person"
+            {
+              :id   => doc["_id"],
+              :type => doc["type"],
+              :doc  => {
+                "name"    => doc["name"],
+                "age"     => doc["age"],
+                "country" => doc["country"]
+              }
+            }
+          end
         end
       end
 
