@@ -9,16 +9,12 @@ module Couchlastic
       yield self if block_given?
     end
 
-    def couch url=nil
-      url ? @couch = url : @couch
-    end
+    attr_accessor :couch
 
-    def elastic url=nil
-      if url
-        @elastic = EventMachine::ElasticSearch::Client.new(url)
-      else
-        @elastic
-      end
+    attr_reader :elastic
+
+    def elastic= url
+      @elastic = EventMachine::ElasticSearch::Client.new(url)
     end
 
     def map name, mapping

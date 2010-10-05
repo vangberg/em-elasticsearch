@@ -1,8 +1,8 @@
 require "./test/helper.rb"
 
 Indexer = Couchlastic::Indexer.new do |c|
-  c.couch "http://127.0.0.1:5984/couchlastic"
-  c.elastic "http://127.0.0.1:9200"
+  c.couch   = "http://127.0.0.1:5984/couchlastic"
+  c.elastic = "http://127.0.0.1:9200"
 
   c.map("notes/person",
     :properties => {
