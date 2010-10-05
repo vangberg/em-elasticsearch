@@ -4,10 +4,12 @@ Indexer = Couchlastic::Indexer.new do |c|
   c.couch "http://127.0.0.1:5984/couchlastic"
   c.elastic "http://127.0.0.1:9200"
 
-  #c.map :index => "notes", :type => "person"
-    #:properties => {
-      #:messages => {
-  #})
+  c.map("notes/person",
+    :properties => {
+      "_id"  => {"include_in_all" => false},
+      "type" => {"include_in_all" => false}
+    }
+  )
 
   c.index "notes" do |change|
     {
@@ -31,6 +33,18 @@ class TestIndexer < ElasticTestCase
     elastic.cluster.delete_all_indices {
       Indexer.start
       EM.add_timer(2, block)
+    }
+  end
+
+  test "save mapping" do
+    prepare {
+      request = elastic.index("notes").type("person").mapping
+      request.callback {|response|
+        properties = response["notes"]["person"]["properties"]
+        assert_false properties["_id"]["include_in_all"]
+        assert_false properties["type"]["include_in_all"]
+        done
+      }
     }
   end
 
