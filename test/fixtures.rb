@@ -21,3 +21,9 @@ Klaus = {
   "age"     => 24,
   "country" => "Germany"
 }
+
+Volvo = {
+  "_id"     => "volvo",
+  "type"    => "car",
+  "country" => "Sweden"
+}

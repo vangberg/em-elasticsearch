@@ -18,15 +18,17 @@ Indexer = Couchlastic::Indexer.new do |c|
   )
 
   c.index "notes" do |change, doc|
-    {
-      :id   => doc["_id"],
-      :type => doc["type"],
-      :doc  => {
-        "name"    => doc["name"],
-        "age"     => doc["age"],
-        "country" => doc["country"]
+    if doc["type"] == "person"
+      {
+        :id   => doc["_id"],
+        :type => doc["type"],
+        :doc  => {
+          "name"    => doc["name"],
+          "age"     => doc["age"],
+          "country" => doc["country"]
+        }
       }
-    }
+    end
   end
 end
 
@@ -36,6 +38,7 @@ class TestIndexer < ElasticTestCase
     couch.save_doc Harry
     couch.save_doc Joan
     couch.save_doc Klaus
+    couch.save_doc Volvo
     couch.delete_doc Klaus
   end
 
@@ -75,6 +78,14 @@ class TestIndexer < ElasticTestCase
     prepare {
       request = elastic.index("notes").type("person").get("klaus")
       request.callback { flunk "doc should be deleted" }
+      request.errback { done }
+    }
+  end
+
+  test "don't index nil returns" do
+    prepare {
+      request = elastic.index("notes").type("car").get("volvo")
+      request.callback { flunk "doc should not be indexed" }
       request.errback { done }
     }
   end
