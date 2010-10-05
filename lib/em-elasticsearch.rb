@@ -4,6 +4,8 @@ require "json"
 
 module EventMachine
   class ElasticSearch
+    class MissingNameError < StandardError; end
+
     module HTTP
       def request method, path="/", options={}, &block
         options[:head] ||= {}
@@ -96,6 +98,7 @@ module EventMachine
       attr_reader :client, :name
 
       def initialize client, name
+        raise ArgumentError, "#{name} is not a valid name" unless name
         @client = client
         @name   = name
       end
@@ -127,6 +130,8 @@ module EventMachine
       attr_reader :elastic_index, :name
 
       def initialize elastic_index, name
+        raise ArgumentError, "#{name} is not a valid name" unless name
+
         @elastic_index = elastic_index
         @name = name
       end

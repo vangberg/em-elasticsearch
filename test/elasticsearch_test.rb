@@ -105,6 +105,15 @@ class TestIndex < ElasticTestCase
     @notes = elastic.index("notes")
   end
 
+  test "require name" do
+    begin
+      elastic.index(nil)
+      flunk "should raise ArgumentError"
+    rescue ArgumentError
+      done
+    end
+  end
+
   test "#base_url" do
     assert_equal "http://127.0.0.1:9200/notes", @notes.base_url
     done
@@ -158,6 +167,15 @@ class TestType < ElasticTestCase
   setup do
     @notes = elastic.index("notes")
     @person = @notes.type("person")
+  end
+
+  test "require name" do
+    begin
+      @notes.type(nil)
+      flunk "should raise ArgumentError"
+    rescue ArgumentError
+      done
+    end
   end
 
   test "#base_url" do
