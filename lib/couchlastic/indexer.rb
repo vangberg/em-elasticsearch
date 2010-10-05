@@ -26,7 +26,7 @@ module Couchlastic
     end
 
     def start
-      EM::Iterator.new(@mappings).each(lambda {|hash, iter|
+      put_mappings = lambda {|hash, iter|
         name, type = hash[0].split("/")
         mapping    = hash[1]
         index      = elastic.index(name)
@@ -34,12 +34,18 @@ module Couchlastic
         index.create {
           index.type(type).map(mapping) {iter.next}
         }
-      }, lambda {
+      }
+
+      start_changes = lambda {
         changes = CouchChanges.new
         changes.update {|change| index_change change }
         changes.listen :url => @couch, :include_docs => true
-      })
+      }
+
+      EM::Iterator.new(@mappings).each(put_mappings, start_changes)
     end
+
+    private
 
     def index_change change
       @indices.each {|name, block|
