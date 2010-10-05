@@ -4,20 +4,16 @@ Indexer = Couchlastic::Indexer.new do |c|
   c.couch "http://127.0.0.1:5984/couchlastic"
   c.elastic "http://127.0.0.1:9200"
 
-  c.map("notes/bar", {
-    :properties => {
-      :messages => {
-  })
+  #c.map :index => "notes", :type => "person"
+    #:properties => {
+      #:messages => {
+  #})
 
   c.index "notes" do |change|
-    target.id = source["_id"]
-    target.type = "person"
-    target.source = source
-    target
     {
-      :id => change["doc"]["_id"],
+      :id   => change["doc"]["_id"],
       :type => change["doc"]["type"],
-      :doc => change["doc"]
+      :doc  => change["doc"]
     }
   end
 end
@@ -34,7 +30,7 @@ class TestIndexer < ElasticTestCase
   def prepare &block
     elastic.cluster.delete_all_indices {
       Indexer.start
-      EM.add_timer(2.5, block)
+      EM.add_timer(2, block)
     }
   end
 

@@ -26,20 +26,17 @@ module Couchlastic
 
     def start
       changes = CouchChanges.new
-      changes.update {|c|
-        Couchlastic.logger.info "Indexing sequence #{c["seq"]}"
+      changes.update {|change|
+        Couchlastic.logger.info "Indexing sequence #{change["seq"]}"
         @indices.each {|name, block|
-          target = block.call c["doc"], Document.new
-          if target
-            type = elastic.index(name).type(target.type)
-            type.index(target.id, target.source)
+          doc = block.call change
+          if doc
+            type = elastic.index(name).type(doc[:type])
+            type.index(doc[:id], doc[:doc])
           end
         }
       }
       changes.listen :url => @couch, :include_docs => true
     end
-  end
-
-  class Document < Struct.new(:id, :type, :source)
   end
 end
