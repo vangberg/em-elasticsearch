@@ -38,7 +38,10 @@ module Couchlastic
 
       start_changes = lambda {
         changes = CouchChanges.new
-        changes.update {|change| index_change change }
+        changes.update {|change|
+          doc = change.delete("doc")
+          index_change change, doc
+        }
         changes.listen :url => @couch, :include_docs => true
       }
 
@@ -47,9 +50,9 @@ module Couchlastic
 
     private
 
-    def index_change change
+    def index_change change, doc
       @indices.each {|name, block|
-        if doc = block.call(change)
+        if doc = block.call(change, doc)
           type = elastic.index(name).type(doc[:type])
           type.index(doc[:id], doc[:doc])
         end

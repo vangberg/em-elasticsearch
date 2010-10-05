@@ -17,8 +17,7 @@ Indexer = Couchlastic::Indexer.new do |c|
     }
   )
 
-  c.index "notes" do |change|
-    doc = change["doc"]
+  c.index "notes" do |change, doc|
     {
       :id   => doc["_id"],
       :type => doc["type"],
