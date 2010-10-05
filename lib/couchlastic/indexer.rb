@@ -36,18 +36,18 @@ module Couchlastic
         }
       }, lambda {
         changes = CouchChanges.new
-        changes.update {|change|
-          Couchlastic.logger.info "Indexing sequence #{change["seq"]}"
-          @indices.each {|name, block|
-            doc = block.call change
-            if doc
-              type = elastic.index(name).type(doc[:type])
-              type.index(doc[:id], doc[:doc])
-            end
-          }
-        }
+        changes.update {|change| index_change change }
         changes.listen :url => @couch, :include_docs => true
       })
+    end
+
+    def index_change change
+      @indices.each {|name, block|
+        if doc = block.call(change)
+          type = elastic.index(name).type(doc[:type])
+          type.index(doc[:id], doc[:doc])
+        end
+      }
     end
   end
 end
