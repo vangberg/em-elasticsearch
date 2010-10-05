@@ -39,6 +39,8 @@ module Couchlastic
       }
 
       start_changes = lambda {
+        Couchlastic.logger.info "Listening to changes from #{@couch}"
+
         changes = CouchChanges.new
         changes.update {|change|
           Couchlastic.logger.info "Indexing update sequence #{change["seq"]}"
