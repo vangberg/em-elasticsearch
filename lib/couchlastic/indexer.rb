@@ -33,13 +33,12 @@ module Couchlastic
       EM::Iterator.new(@mappings).map(lambda {|hash, iter|
         index, type = hash[0].split("/")
         mapping = hash[1]
-        r = elastic.index(index).type(type).map(mapping) {
-          p "mapped"
-          iter.return true
+        elastic.index(index).create {
+          elastic.index(index).type(type).map(mapping) {
+            iter.return true
+          }
         }
-        r.errback {|h| p h.response}
-      }, lambda {
-        p "done"
+      }, lambda {|result|
         changes = CouchChanges.new
         changes.update {|change|
           Couchlastic.logger.info "Indexing sequence #{change["seq"]}"

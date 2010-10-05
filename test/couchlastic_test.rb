@@ -6,16 +6,27 @@ Indexer = Couchlastic::Indexer.new do |c|
 
   c.map("notes/person",
     :properties => {
-      "_id"  => {"include_in_all" => false},
-      "type" => {"include_in_all" => false}
+      "name" => {
+        "type" => "string",
+        "include_in_all" => false
+      },
+      "age" => {
+        "type" => "integer",
+        "include_in_all" => false
+      }
     }
   )
 
   c.index "notes" do |change|
+    doc = change["doc"]
     {
-      :id   => change["doc"]["_id"],
-      :type => change["doc"]["type"],
-      :doc  => change["doc"]
+      :id   => doc["_id"],
+      :type => doc["type"],
+      :doc  => {
+        "name"    => doc["name"],
+        "age"     => doc["age"],
+        "country" => doc["country"]
+      }
     }
   end
 end
@@ -41,8 +52,8 @@ class TestIndexer < ElasticTestCase
       request = elastic.index("notes").type("person").mapping
       request.callback {|response|
         properties = response["notes"]["person"]["properties"]
-        assert_false properties["_id"]["include_in_all"]
-        assert_false properties["type"]["include_in_all"]
+        assert ! properties["name"]["include_in_all"]
+        assert ! properties["age"]["include_in_all"]
         done
       }
     }
