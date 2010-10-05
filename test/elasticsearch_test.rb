@@ -166,6 +166,41 @@ class TestType < ElasticTestCase
       }
     }
   end
+
+  STRING_MAPPING = {
+    "properties" => {
+      "name" => {"type" => "string"}
+    }
+  }
+
+  INTEGER_MAPPING = {
+    "properties" => {
+      "name" => {"type" => "integer"}
+    }
+  }
+
+  test "#map/#mapping" do
+    cluster.delete_all_indices {@notes.create {
+      @person.map(STRING_MAPPING) {|response|
+        assert response["ok"]
+        @person.mapping {|response|
+          type = response["notes"]["person"]["properties"]["name"]["type"]
+          assert_equal "string", type
+          done
+        }
+      }
+    }}
+  end
+
+  test "#map with conflict" do
+    cluster.delete_all_indices {@notes.create {
+      @person.map(STRING_MAPPING) {
+        request = @person.map(INTEGER_MAPPING)
+        request.callback { flunk "should fail with merge conflict"; done }
+        request.errback { done }
+      }
+    }}
+  end
 end
 
 #class EM::HttpClient

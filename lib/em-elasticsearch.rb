@@ -141,6 +141,15 @@ module EventMachine
       def get id, &block
         request :get, "/#{id}", &block
       end
+
+      def mapping &block
+        request :get, "/_mapping", &block
+      end
+
+      def map mapping, options={}, &block
+        body = { @name => mapping }.to_json
+        request :put, "/_mapping", :body => body, :query => options, &block
+      end
     end
   end
 end

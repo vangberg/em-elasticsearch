@@ -4,11 +4,21 @@ Indexer = Couchlastic::Indexer.new do |c|
   c.couch "http://127.0.0.1:5984/couchlastic"
   c.elastic "http://127.0.0.1:9200"
 
-  c.index "notes" do |source, target|
+  c.map("notes/bar", {
+    :properties => {
+      :messages => {
+  })
+
+  c.index "notes" do |change|
     target.id = source["_id"]
     target.type = "person"
     target.source = source
     target
+    {
+      :id => change["doc"]["_id"],
+      :type => change["doc"]["type"],
+      :doc => change["doc"]
+    }
   end
 end
 
