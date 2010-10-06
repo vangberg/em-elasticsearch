@@ -52,14 +52,14 @@ module Couchlastic
     def listen_for_changes
       Couchlastic.logger.info "Listening to changes from #{@couch}"
 
-      changes = CouchChanges.new
+      changes = CouchChanges.new :url => @couch, :include_docs => true
       changes.update {|change|
         Couchlastic.logger.info "Indexing update sequence #{change["seq"]}"
 
         doc = change.delete("doc")
         index_change change, doc
       }
-      changes.listen :url => @couch, :include_docs => true
+      changes.listen
     end
 
     def index_change change, doc

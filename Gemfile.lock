@@ -6,7 +6,7 @@ GIT
 
 GIT
   remote: http://github.com/ichverstehe/couchchanges.git
-  revision: b41b57f305cfa77b95c9eec99ec6b7f36a8a5af2
+  revision: fa3e46f277859cae418fc72ad38b1f8c3573c15f
   specs:
     couchchanges (0.1)
       em-http-request (>= 0.2.7)
