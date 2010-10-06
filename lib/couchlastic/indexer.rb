@@ -25,7 +25,8 @@ module Couchlastic
       @indices[name] = block
     end
 
-    def start
+    def start &block
+      @disconnect = block
       EM::Iterator.new(@mappings).each(
         method(:put_mapping),
         method(:listen_for_changes)
@@ -52,13 +53,16 @@ module Couchlastic
     def listen_for_changes
       Couchlastic.logger.info "Listening to changes from #{@couch}"
 
-      changes = CouchChanges.new :url => @couch, :include_docs => true
+      @couch[:include_docs] = true
+
+      changes = CouchChanges.new @couch
       changes.update {|change|
         Couchlastic.logger.info "Indexing update sequence #{change["seq"]}"
 
         doc = change.delete("doc")
         index_change change, doc
       }
+      changes.disconnect &@disconnect if @disconnect
       changes.listen
     end
 

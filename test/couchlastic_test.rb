@@ -1,7 +1,10 @@
 require "./test/helper.rb"
 
 Indexer = Couchlastic::Indexer.new do |c|
-  c.couch   = "http://127.0.0.1:5984/couchlastic"
+  c.couch   = {
+    :url => "http://127.0.0.1:5984/couchlastic",
+    :timeout => 1
+  }
   c.elastic = "http://127.0.0.1:9200"
 
   c.map("notes/person",
@@ -44,8 +47,8 @@ class TestIndexer < ElasticTestCase
 
   def prepare &block
     elastic.cluster.delete_all_indices {
-      Indexer.start
-      EM.add_timer(2, block)
+      Indexer.start &block
+      #EM.add_timer(2, block)
     }
   end
 
