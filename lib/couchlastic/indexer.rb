@@ -25,8 +25,11 @@ module Couchlastic
       @indices[name] = block
     end
 
-    def start &block
-      @disconnect = block
+    def disconnect &block
+      block ? @disconnect = block : @disconnect
+    end
+
+    def start
       EM::Iterator.new(@mappings).each(
         method(:put_mapping),
         method(:listen_for_changes)

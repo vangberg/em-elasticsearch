@@ -47,7 +47,16 @@ class TestIndexer < ElasticTestCase
 
   def prepare &block
     elastic.cluster.delete_all_indices {
-      Indexer.start &block
+      Indexer.disconnect &block
+      Indexer.start
+    }
+  end
+
+  test "disconnect callback" do
+    elastic.cluster.delete_all_indices {
+      EM.add_timer(1) { flunk "should invoke disconnect callback" }
+      Indexer.disconnect { done }
+      Indexer.start
     }
   end
 
@@ -65,7 +74,7 @@ class TestIndexer < ElasticTestCase
 
   test "index docs" do
     prepare {
-      EM.add_timer(1) {
+      EM.add_timer(1.5) {
         request = elastic.index("notes").type("person").get("joan")
         request.callback {|response|
           assert_equal "joan", response["_id"]
