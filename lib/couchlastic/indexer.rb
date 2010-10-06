@@ -61,6 +61,7 @@ module Couchlastic
       changes = CouchChanges.new @couch
       changes.update {|change|
         Couchlastic.logger.info "Indexing update sequence #{change["seq"]}"
+        Couchlastic.logger.info "Document id: #{change["id"]}" if change["id"]
 
         doc = change.delete("doc")
         index_change change, doc
