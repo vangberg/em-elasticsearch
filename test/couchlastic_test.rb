@@ -48,7 +48,6 @@ class TestIndexer < ElasticTestCase
   def prepare &block
     elastic.cluster.delete_all_indices {
       Indexer.start &block
-      #EM.add_timer(2, block)
     }
   end
 
@@ -66,14 +65,16 @@ class TestIndexer < ElasticTestCase
 
   test "index docs" do
     prepare {
-      request = elastic.index("notes").type("person").get("joan")
-      request.callback {|response|
-        assert_equal "joan", response["_id"]
-        assert_equal "Joan January", response["_source"]["name"]
-        assert_equal "USA", response["_source"]["country"]
-        done
+      EM.add_timer(1) {
+        request = elastic.index("notes").type("person").get("joan")
+        request.callback {|response|
+          assert_equal "joan", response["_id"]
+          assert_equal "Joan January", response["_source"]["name"]
+          assert_equal "USA", response["_source"]["country"]
+          done
+        }
+        request.errback { flunk "didn't index doc" }
       }
-      request.errback { flunk "didn't index doc" }
     }
   end
 
