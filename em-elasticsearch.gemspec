@@ -8,7 +8,7 @@ Gem::Specification.new do |s|
   s.description = "elasticsearch library for eventmachine"
   s.authors  = ["Harry Vangberg"]
   s.files    = [
-    "README.md",
+    "README",
     "LICENSE",
     "Rakefile",
 		"em-elasticsearch.gemspec",
