@@ -1,0 +1,8 @@
+# em-elasticsearch
+
+elasticsearch library for eventmachine. work in progress.
+if you want to use at this point, consult the tests. they
+should cover pretty much everything.
+
+the api is probably going to change dramatically the next
+couple of versions.
