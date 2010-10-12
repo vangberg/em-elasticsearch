@@ -1,4 +1,4 @@
-# em-elasticsearch
+== em-elasticsearch =====
 
 elasticsearch library for eventmachine. work in progress.
 if you want to use at this point, consult the tests. they
