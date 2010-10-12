@@ -20,7 +20,7 @@ module EventMachine
             req.fail http
           else
             response = JSON.parse(http.response)
-            yield response, nil if block_given?
+            yield response if block_given?
             req.succeed response
           end
         }
