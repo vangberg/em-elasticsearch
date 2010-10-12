@@ -3,7 +3,6 @@ require "test/unit"
 require "em-spec/test"
 require "contest"
 require "em-elasticsearch"
-require "couchrest"
 require "./test/fixtures.rb"
 
 class ElasticTestCase < Test::Unit::TestCase
@@ -15,9 +14,5 @@ class ElasticTestCase < Test::Unit::TestCase
 
   def cluster
     elastic.cluster
-  end
-
-  def couch
-    @couch ||= CouchRest.new("http://localhost:5984").database("em-elasticsearch")
   end
 end

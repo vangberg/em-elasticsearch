@@ -8,6 +8,5 @@ gem "json", "1.4.6"
 group :development do
   gem "em-spec", :git => "http://github.com/joshbuddy/em-spec.git"
   gem "contest"
-  gem "couchrest"
   gem "rake"
 end
