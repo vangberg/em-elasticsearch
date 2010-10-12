@@ -32,6 +32,7 @@ GEM
       eventmachine (>= 0.12.9)
     json (1.4.6)
     mime-types (1.16)
+    rake (0.8.7)
     rest-client (1.6.1)
       mime-types (>= 1.16)
 
@@ -46,3 +47,4 @@ DEPENDENCIES
   em-spec!
   eventmachine!
   json (= 1.4.6)
+  rake
