@@ -64,7 +64,7 @@ class TestClient < ElasticTestCase
     cluster.delete_all_indices {
       ops = [
         {"index" => {"index" => "notes", "type" => "person", "id" => "harry"}},
-        {"person" => {"name" => "Harry", "country" => "Denmark"}},
+        {"name" => "Harry", "country" => "Denmark"},
         {"delete" => {"index" => "notes", "type" => "person", "id" => "harry"}}
       ]
       elastic.bulk(ops) {|response|
