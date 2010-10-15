@@ -59,6 +59,24 @@ class TestClient < ElasticTestCase
       done
     }
   end
+
+  test "#bulk" do
+    cluster.delete_all_indices {
+      elastic.index("notes").create {
+        ops = [
+          {"index" => {"index" => "notes", "type" => "person", "id" => "harry"}},
+          {"person" => {"name" => "Harry", "country" => "Denmark"}},
+          {"delete" => {"index" => "notes", "type" => "person", "id" => "harry"}}
+        ]
+        elastic.bulk(ops) {|response|
+          assert_equal 2, response["items"].size
+          assert_equal "index", response["items"][0].keys[0]
+          assert_equal "delete", response["items"][1].keys[0]
+          done
+        }
+      }
+    }
+  end
 end
 
 class TestCluster < ElasticTestCase

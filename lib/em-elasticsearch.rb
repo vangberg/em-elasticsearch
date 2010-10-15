@@ -47,6 +47,11 @@ module EventMachine
         request :get, "/_status", &block
       end
 
+      def bulk operations, &block
+        body = operations.map {|o| o.to_json + "\n"}.join
+        request :post, "/_bulk", :body => body, &block
+      end
+
       def cluster
         @cluster ||= Cluster.new self
       end
